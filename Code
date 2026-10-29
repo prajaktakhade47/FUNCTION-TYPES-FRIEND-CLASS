@@ -1,0 +1,85 @@
+#include <iostream>
+#include <string>
+using namespace std;
+ 
+class Employee {
+private:
+    int empId;
+    string empName;
+    float empSalary;
+    static int totalCount;
+ 
+    friend class Manager;   // Manager can access private members
+ 
+public:
+    // Constructor using this pointer
+    Employee(int empId, string empName, float empSalary) {
+        this->empId = empId;
+        this->empName = empName;
+        this->empSalary = empSalary;
+        totalCount++;
+    }
+ 
+    // Chaining functions: each returns *this
+    Employee& setName(string empName) {
+        this->empName = empName;
+        return *this;
+    }
+ 
+    Employee& setSalary(float empSalary) {
+        this->empSalary = empSalary;
+        return *this;
+    }
+ 
+    // Inline function defined inside the class (implicitly inline)
+    bool isSenior() {
+        return empSalary >= 50000;
+    }
+ 
+    // Inline function defined outside the class
+    inline void display();
+ 
+    // Static member function
+    static int getCount() {
+        return totalCount;
+    }
+};
+ 
+int Employee::totalCount = 0;
+ 
+inline void Employee::display() {
+    cout << "Emp ID: " << empId
+         << ", Name: " << empName
+         << ", Salary: " << empSalary
+         << ", Level: " << (isSenior() ? "Senior" : "Junior") << endl;
+}
+ 
+class Manager {
+public:
+    void giveIncrement(Employee &e, float amount) {
+        e.empSalary += amount;   // direct access to private member
+    }
+};
+ 
+int main() {
+    Employee emp1(201, "PRAJAKTA", 60000);
+    Employee emp2(202, "Rohan", 35000);
+ 
+    cout << "Total employees: " << Employee::getCount() << endl;
+ 
+    cout << "\n--- Initial details ---" << endl;
+    emp1.display();
+    emp2.display();
+ 
+    cout << "\n--- Function chaining using this pointer ---" << endl;
+    emp2.setName("Rohan Kulkarni").setSalary(42000);
+    emp2.display();
+ 
+    cout << "\n--- Friend class gives increment of 10000 to emp2 ---" << endl;
+    Manager managerObj;
+    managerObj.giveIncrement(emp2, 10000);
+    emp2.display();
+ 
+    return 0;
+}
+ 
